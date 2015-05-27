@@ -1,0 +1,5 @@
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\OAlphaCollections\bin\Release\OAlphaCollections.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\OAlphaCollections\bin\Release\OAlphaCollections.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\OAlphaCollections\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\OAlphaCollections\obj\Release\OAlphaCollections.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\OAlphaCollections\obj\Release\OAlphaCollections.pdb

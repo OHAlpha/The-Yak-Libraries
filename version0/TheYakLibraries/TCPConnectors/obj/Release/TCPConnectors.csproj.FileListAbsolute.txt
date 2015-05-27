@@ -1,0 +1,11 @@
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\TCPConnectors\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\TCPConnectors\bin\Release\TCPConnectors.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\TCPConnectors\bin\Release\TCPConnectors.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\TCPConnectors\bin\Release\JSON.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\TCPConnectors\bin\Release\Logging.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\TCPConnectors\bin\Release\OAlphaCollections.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\TCPConnectors\bin\Release\JSON.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\TCPConnectors\bin\Release\Logging.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\TCPConnectors\bin\Release\OAlphaCollections.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\TCPConnectors\obj\Release\TCPConnectors.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\TCPConnectors\obj\Release\TCPConnectors.pdb

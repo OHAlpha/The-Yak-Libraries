@@ -1,0 +1,5 @@
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\Logging\bin\Release\Logging.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\Logging\bin\Release\Logging.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\Logging\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\Logging\obj\Release\Logging.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\Logging\obj\Release\Logging.pdb

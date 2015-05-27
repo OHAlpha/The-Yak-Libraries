@@ -1,0 +1,13 @@
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\RecognitionServer.exe
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\RecognitionServer.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\TCPConnectors.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\Logging.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\Logging.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\TCPConnectors.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\obj\Release\RecognitionServer.exe
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\obj\Release\RecognitionServer.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\JSON.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\OAlphaCollections.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\JSON.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\OAlphaCollections.pdb

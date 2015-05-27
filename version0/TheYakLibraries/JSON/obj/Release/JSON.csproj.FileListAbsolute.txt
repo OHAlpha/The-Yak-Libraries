@@ -1,0 +1,7 @@
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\JSON\bin\Release\JSON.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\JSON\bin\Release\JSON.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\JSON\bin\Release\OAlphaCollections.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\JSON\bin\Release\OAlphaCollections.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\JSON\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\JSON\obj\Release\JSON.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\JSON\obj\Release\JSON.pdb

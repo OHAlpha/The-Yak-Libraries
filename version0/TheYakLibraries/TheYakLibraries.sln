@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C# Express 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAlphaCollections", "OAlphaCollections\OAlphaCollections.csproj", "{41D5D973-1DEB-4143-BD21-8F7824AEFE7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecognitionServer", "RecognitionServer\RecognitionServer.csproj", "{CD52BCAE-94A5-442D-A0B6-8DE7785F2FF0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CD2FB0DB-3588-4638-B860-883083F1059D} = {CD2FB0DB-3588-4638-B860-883083F1059D}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSON", "JSON\JSON.csproj", "{8438382B-C89F-412F-ADF3-B6955D967845}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCPConnectors", "TCPConnectors\TCPConnectors.csproj", "{CD2FB0DB-3588-4638-B860-883083F1059D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8438382B-C89F-412F-ADF3-B6955D967845} = {8438382B-C89F-412F-ADF3-B6955D967845}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging", "Logging\Logging.csproj", "{56A5F8F9-0D62-4DA5-AEC0-B0DEF585365F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{41D5D973-1DEB-4143-BD21-8F7824AEFE7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41D5D973-1DEB-4143-BD21-8F7824AEFE7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41D5D973-1DEB-4143-BD21-8F7824AEFE7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41D5D973-1DEB-4143-BD21-8F7824AEFE7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD52BCAE-94A5-442D-A0B6-8DE7785F2FF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD52BCAE-94A5-442D-A0B6-8DE7785F2FF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD52BCAE-94A5-442D-A0B6-8DE7785F2FF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD52BCAE-94A5-442D-A0B6-8DE7785F2FF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8438382B-C89F-412F-ADF3-B6955D967845}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8438382B-C89F-412F-ADF3-B6955D967845}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8438382B-C89F-412F-ADF3-B6955D967845}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8438382B-C89F-412F-ADF3-B6955D967845}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD2FB0DB-3588-4638-B860-883083F1059D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD2FB0DB-3588-4638-B860-883083F1059D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD2FB0DB-3588-4638-B860-883083F1059D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD2FB0DB-3588-4638-B860-883083F1059D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56A5F8F9-0D62-4DA5-AEC0-B0DEF585365F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56A5F8F9-0D62-4DA5-AEC0-B0DEF585365F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56A5F8F9-0D62-4DA5-AEC0-B0DEF585365F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56A5F8F9-0D62-4DA5-AEC0-B0DEF585365F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
