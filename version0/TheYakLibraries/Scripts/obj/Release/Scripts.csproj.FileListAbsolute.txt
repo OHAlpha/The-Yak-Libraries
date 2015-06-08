@@ -1,0 +1,5 @@
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\Scripts\bin\Release\Scripts.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\Scripts\bin\Release\Scripts.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\Scripts\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\Scripts\obj\Release\Scripts.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\Scripts\obj\Release\Scripts.pdb

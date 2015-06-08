@@ -4,7 +4,7 @@ using OAlphaCollections;
 namespace JSON
 {
 
-    public class JSONElement
+    public abstract class JSONElement
     {
 
         public static int VALUE_TYPE_BOOL = 0;
@@ -15,9 +15,30 @@ namespace JSON
         public static int VALUE_TYPE_JSON = 5;
         public static int VALUE_TYPE_NULL = 6;
 
+        public abstract object GetValue();
+
+        public static JSONElement ToJSONElement(object value)
+        {
+            if (value == null)
+                return new NullValue();
+            if (value.GetType().Equals(typeof(bool)))
+                return new BoolValue((bool)value);
+            if (value.GetType().Equals(typeof(int)))
+                return new IntValue((int)value);
+            if (value.GetType().Equals(typeof(float)))
+                return new FloatValue((float)value);
+            if (value.GetType().Equals(typeof(string)))
+                return new StringValue((string)value);
+            if (value.GetType().Equals(typeof(object[])))
+                return new ArrayValue((object[])value);
+            if (typeof(JSONElement).IsInstanceOfType(value))
+                return (JSONElement)value;
+            throw new Exception("invalid type");
+        }
+
     }
 
-    public class BoolValue
+    public class BoolValue : JSONElement
     {
         public bool value;
 
@@ -31,9 +52,14 @@ namespace JSON
         {
             return "" + value;
         }
+
+        override public object GetValue()
+        {
+            return value;
+        }
     }
 
-    public class IntValue
+    public class IntValue : JSONElement
     {
         public int value;
 
@@ -47,13 +73,18 @@ namespace JSON
         {
             return "" + value;
         }
+
+        override public object GetValue()
+        {
+            return value;
+        }
     }
 
-    public class FloatValue
+    public class FloatValue : JSONElement
     {
-        public float value;
+        public double value;
 
-        public FloatValue(float value)
+        public FloatValue(double value)
         {
             this.value = value;
         }
@@ -63,9 +94,14 @@ namespace JSON
         {
             return "" + value;
         }
+
+        override public object GetValue()
+        {
+            return value;
+        }
     }
 
-    public class StringValue
+    public class StringValue : JSONElement
     {
         public string value;
 
@@ -79,15 +115,25 @@ namespace JSON
         {
             return "\"" + value + "\"";
         }
+
+        override public object GetValue()
+        {
+            return value;
+        }
     }
 
-    public class NullValue
+    public class NullValue : JSONElement
     {
 
         override
             public string ToString()
         {
             return "null";
+        }
+
+        override public Object GetValue()
+        {
+            return null;
         }
     }
 

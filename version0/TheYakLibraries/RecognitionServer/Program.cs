@@ -5,6 +5,7 @@ using System.Speech.Recognition;
 using System.Text;
 using System.Threading;
 using JSON;
+using OAlphaCollections;
 using TCPConnectors;
 
 namespace RecognitionServer
@@ -15,22 +16,29 @@ namespace RecognitionServer
 
         private SpeechRecognitionEngine sre;
 
+        private Semaphore operationalSemaphore = new Semaphore(0, 1);
+
+        private Semaphore grammarSemaphore = new Semaphore(1, 1);
+
         private Semaphore loadedSemaphore = new Semaphore(0, 1);
 
         private Semaphore exitSemaphore = new Semaphore(0, 1);
 
-        public Program() : base(201, 200)
+        private Map<string, Grammar> grammars = new SinglyLinkedMap<string, Grammar>();
+
+        public Program()
+            : base(201, 200)
         {
             logger += Console.Write;
-            commandHandler += MessageReceived;
+            commandHandler += HandleCommand;
             messageHandler += MessageReceived;
-            requestHandler += MessageReceived;
+            requestHandler += HandleRequest;
         }
 
         public void StartRecognition()
         {
 
-            Start();
+            Start(-1);
 
             // Create a new SpeechRecognitionEngine instance.
             sre = new SpeechRecognitionEngine();
@@ -57,7 +65,8 @@ namespace RecognitionServer
 
             //Load grammar from file
             Console.Write("loading grammar\n");
-            sre.LoadGrammarAsync(new Grammar(Environment.CurrentDirectory + "\\test.grxml"));
+            Console.Write("AddGrammar(\"base-commands\",\"base_commands\"): " + AddGrammar("base-commands", "base_commands"));
+            Console.Write("LoadGrammar(\"base-commands\"): " + LoadGrammar("base-commands"));
             Console.Write("waiting for load\n");
             loadedSemaphore.WaitOne();
             Console.Write("returned from load\n");
@@ -79,17 +88,22 @@ namespace RecognitionServer
         void sre_LoadGrammarCompleted(object sender, LoadGrammarCompletedEventArgs e)
         {
             JSONObject msg = new JSONObject();
-            msg.AddString("type", "SpeechEvent");
+            msg.AddString("message", "SpeechEvent");
             msg.AddString("event", "LoadGrammarCompleted");
+            msg.AddString("grammar", e.Grammar.Name);
             Message(msg, false);
-            loadedSemaphore.Release();
+            if (e.Grammar.Name.Equals("base-commands"))
+            {
+                loadedSemaphore.Release();
+                operationalSemaphore.Release();
+            }
         }
 
         // Create a simple handler for the SpeechDetected event.
         void sre_SpeechDetected(object sender, SpeechDetectedEventArgs e)
         {
             JSONObject msg = new JSONObject();
-            msg.AddString("type", "SpeechEvent");
+            msg.AddString("message", "SpeechEvent");
             msg.AddString("event", "SpeechDetected");
             Message(msg, false);
         }
@@ -98,7 +112,7 @@ namespace RecognitionServer
         void sre_SpeechHypothesized(object sender, SpeechHypothesizedEventArgs e)
         {
             JSONObject msg = new JSONObject();
-            msg.AddString("type", "SpeechEvent");
+            msg.AddString("message", "SpeechEvent");
             msg.AddString("event", "SpeechHypothesized");
             msg.AddString("text", e.Result.Text);
             Message(msg, false);
@@ -110,14 +124,20 @@ namespace RecognitionServer
             int type = -1;
             int subtype = -1;
             JSONObject msg = new JSONObject();
-            msg.AddString("type", "SpeechEvent");
+            msg.AddString("message", "SpeechEvent");
             msg.AddString("event", "SpeechRecognized");
             msg.AddString("text", e.Result.Text);
             msg.AddFloat("confidence", e.Result.Confidence);
             JSONObject semantics = new JSONObject();
             foreach (KeyValuePair<String, SemanticValue> child in e.Result.Semantics)
             {
-                semantics.AddString(child.Key, child.Value.Value.ToString());
+                string key = child.Key;
+                SemanticValue semValue = child.Value;
+                object value = semValue.Value;
+                if (value == null)
+                    semantics.AddNull(key);
+                else
+                    semantics.AddString(key, value.ToString());
                 if (child.Key.Equals("type"))
                 {
                     if (child.Value.Value.ToString().Equals("command"))
@@ -147,16 +167,198 @@ namespace RecognitionServer
             Console.Read();
         }
 
-        void MessageReceived(string message, JSONObject response)
+        Exception AddGrammar(string name, string filename)
         {
-            response.AddString("responseType", "message");
-            response.AddString("message", "Message Recieved");
+            grammarSemaphore.WaitOne();
+            try
+            {
+                Grammar g;
+                try
+                {
+                    g = new Grammar(Environment.CurrentDirectory + "\\grammars\\" + filename + ".xml");
+                }
+                catch (Exception e)
+                {
+                    grammarSemaphore.Release();
+                    return e;
+                }
+                g.Name = name;
+                grammars.Put(name, g);
+            }
+            finally
+            {
+                grammarSemaphore.Release();
+            }
+            return null;
         }
 
-        void MessageReceived(JSONObject request, JSONObject response)
+        bool LoadGrammar(string name)
         {
-            response.AddString("responseType", "message");
-            response.AddString("message", "Message Recieved");
+            grammarSemaphore.WaitOne();
+            bool s;
+            try
+            {
+                Grammar g = grammars.Get(name);
+                if (g != null)
+                {
+                    sre.LoadGrammarAsync(g);
+                    s = true;
+                }
+                else
+                    s = false;
+            }
+            finally
+            {
+                grammarSemaphore.Release();
+            }
+            return s;
+        }
+
+        bool UnloadGrammar(string name)
+        {
+            grammarSemaphore.WaitOne();
+            bool s;
+            try
+            {
+                Grammar g = grammars.Get(name);
+                if (g != null)
+                {
+                    sre.UnloadGrammar(g);
+                    s = true;
+                }
+                else
+                    s = false;
+            }
+            finally
+            {
+                grammarSemaphore.Release();
+            }
+            return s;
+        }
+
+        void MessageReceived(JSONObject message, JSONObject response)
+        {
+            operationalSemaphore.WaitOne();
+            try
+            {
+                response.AddString("responseType", "message");
+                response.AddString("message", "Message Recieved");
+            }
+            finally
+            {
+                operationalSemaphore.Release();
+            }
+        }
+
+        void HandleCommand(JSONObject command, JSONObject response)
+        {
+            operationalSemaphore.WaitOne();
+            try
+            {
+                string name, filename;
+                Exception ex;
+                bool success;
+                switch (command.GetString("command"))
+                {
+                    case "AddGrammar":
+                        name = command.GetString("name");
+                        filename = command.GetString("filename");
+                        ex = AddGrammar(name, filename);
+                        if (ex == null)
+                        {
+                            response.AddString("responseType", "message");
+                            response.AddString("message", "Grammar Added");
+                            response.AddString("name", name);
+                            response.AddString("filename", filename);
+                        }
+                        else
+                        {
+                            response.AddString("responseType", "message");
+                            response.AddString("message", "Exception Creating Grammar");
+                            response.AddString("name", name);
+                            response.AddString("filename", filename);
+                            response.AddJSON("exception", ExceptionJSON(ex));
+                        }
+                        break;
+                    case "LoadGrammar":
+                        name = command.GetString("name");
+                        success = LoadGrammar(name);
+                        if (success)
+                        {
+                            response.AddString("responseType", "message");
+                            response.AddString("message", "Grammar Load Started");
+                            response.AddString("name", name);
+                        }
+                        else
+                        {
+                            response.AddString("responseType", "message");
+                            response.AddString("message", "Error Loading Grammar");
+                            response.AddString("name", name);
+                            response.AddString("reason", "No Such Grammar");
+                        }
+                        break;
+                    case "UnloadGrammar":
+                        name = command.GetString("name");
+                        success = UnloadGrammar(name);
+                        if (success)
+                        {
+                            response.AddString("responseType", "message");
+                            response.AddString("message", "Grammar Unloaded");
+                            response.AddString("name", name);
+                        }
+                        else
+                        {
+                            response.AddString("responseType", "message");
+                            response.AddString("message", "Error Unloading Grammar");
+                            response.AddString("name", name);
+                            response.AddString("reason", "No Such Grammar");
+                        }
+                        break;
+                    default:
+                        response.AddString("responseType", "message");
+                        response.AddString("message", "Invalid Command");
+                        break;
+                }
+            }
+            finally
+            {
+                operationalSemaphore.Release();
+            }
+        }
+
+        void HandleRequest(JSONObject request, JSONObject response)
+        {
+            operationalSemaphore.WaitOne();
+            try
+            {
+                switch (request.GetString("request"))
+                {
+                    case "":
+                        response.AddString("responseType", "message");
+                        response.AddString("message", "Request Handled");
+                        break;
+                    default:
+                        response.AddString("responseType", "message");
+                        response.AddString("message", "Unknown Request");
+                        break;
+                }
+            }
+            finally
+            {
+                operationalSemaphore.Release();
+            }
+        }
+
+        JSONObject ExceptionJSON(Exception ex)
+        {
+            JSONObject exception = new JSONObject();
+            exception.AddString("message", ex.Message);
+            exception.AddString("source", ex.Source);
+            exception.AddString("helpLink", ex.HelpLink);
+            exception.AddString("stackTrace", ex.StackTrace);
+            if (ex.InnerException != null)
+                exception.AddJSON("innerException", ExceptionJSON(ex.InnerException));
+            return exception;
         }
 
     }

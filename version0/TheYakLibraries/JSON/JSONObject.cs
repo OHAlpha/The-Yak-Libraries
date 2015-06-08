@@ -4,27 +4,64 @@ using OAlphaCollections;
 namespace JSON
 {
 
+    /**
+     * The JSONObject class is intended for manipulating string objects according to the JSON Specification.
+     * Instances can be created from strings using the JSONParser, or empty instances can be created from constructors and can be
+     * manipulated using the add, set and remove functions. The primitive types are wrapper into the classes specified in Wrapper.cs.
+     */
     public class JSONObject : JSONElement
     {
-        private Map<string, Object> values = new SinglyLinkedMap<string, Object>();
+        private Map<string, JSONElement> values = new SinglyLinkedMap<string, JSONElement>();
 
+        /**
+         * Creates an empty instance.
+         */
         public JSONObject()
         {
         }
 
-        public JSONObject(string[] keys, Object[] values)
+        /**
+         * Initializes the instance with key/value pairs.
+         */ 
+        public JSONObject(string[] keys, object[] values)
         {
             int n = keys.Length;
             if (values.Length < n)
                 n = values.Length;
             for (int i = 0; i < n; i++)
-                this.values.Put(keys[i], values[i]);
+                try
+                {
+                    this.values.Put(keys[i], JSONElement.ToJSONElement(values[i]));
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("object, " + values[i].ToString() + 
+                        ", corresponding to key, " + keys[i] + 
+                        ", is of invalid type: " + values[i].GetType().FullName, ex);
+                }
         }
 
+        /**
+         * Creates an exact copy of this instance. Values are shared between the copies. To clone the values, use CloneComplete().
+         */
         public JSONObject Clone()
         {
             JSONObject clone = new JSONObject();
             clone.values.PutAll(values);
+            return clone;
+        }
+
+        /**
+         * Creates an exact copy of this instance. Values are also cloned. To share the values, use Clone().
+         */
+        public JSONObject CloneComplete()
+        {
+            JSONObject clone = new JSONObject();
+            for (Iterator<string> it = values.KeySet().Iterate(); it.HasNext(); )
+            {
+                string key = it.Next();
+                clone.AddObject(key, values.Get(key).GetValue());
+            }
             return clone;
         }
 
@@ -43,7 +80,7 @@ namespace JSON
             throw new Exception("method not implemented");
         }
 
-        public bool hasKey(string key)
+        public bool HasKey(string key)
         {
             return values.ContainsKey(key);
         }
@@ -75,6 +112,69 @@ namespace JSON
                 return -1;
         }
 
+        public bool IsBool(string key)
+        {
+            if (!values.ContainsKey(key))
+                throw new ArgumentException("key, \"" + key + "\", does not exist");
+            Object val = values.Get(key);
+            Type type = val.GetType();
+            return type.Equals(typeof(BoolValue));
+        }
+
+        public bool IsInt(string key)
+        {
+            if (!values.ContainsKey(key))
+                throw new ArgumentException("key, \"" + key + "\", does not exist");
+            Object val = values.Get(key);
+            Type type = val.GetType();
+            return type.Equals(typeof(IntValue));
+        }
+
+        public bool IsFloat(string key)
+        {
+            if (!values.ContainsKey(key))
+                throw new ArgumentException("key, \"" + key + "\", does not exist");
+            Object val = values.Get(key);
+            Type type = val.GetType();
+            return type.Equals(typeof(FloatValue));
+        }
+
+        public bool IsString(string key)
+        {
+            if (!values.ContainsKey(key))
+                throw new ArgumentException("key, \"" + key + "\", does not exist");
+            Object val = values.Get(key);
+            Type type = val.GetType();
+            return type.Equals(typeof(StringValue));
+        }
+
+        public bool IsArray(string key)
+        {
+            if (!values.ContainsKey(key))
+                throw new ArgumentException("key, \"" + key + "\", does not exist");
+            Object val = values.Get(key);
+            Type type = val.GetType();
+            return type.Equals(typeof(ArrayValue));
+        }
+
+        public bool IsJSON(string key)
+        {
+            if (!values.ContainsKey(key))
+                throw new ArgumentException("key, \"" + key + "\", does not exist");
+            Object val = values.Get(key);
+            Type type = val.GetType();
+            return type.Equals(typeof(JSONObject));
+        }
+
+        public bool IsNull(string key)
+        {
+            if (!values.ContainsKey(key))
+                throw new ArgumentException("key, \"" + key + "\", does not exist");
+            Object val = values.Get(key);
+            Type type = val.GetType();
+            return type.Equals(typeof(NullValue));
+        }
+
         public bool GetBool(int index)
         {
             throw new Exception("method not implemented");
@@ -85,6 +185,8 @@ namespace JSON
             if (!values.ContainsKey(key))
                 throw new ArgumentException("key, \"" + key + "\", does not exist");
             Object val = values.Get(key);
+            if (val == null)
+                throw new NullReferenceException("value pointed to by key, \"" + key + "\", is null");
             if (val.GetType().Equals(typeof(BoolValue)))
                 return ((BoolValue)val).value;
             else
@@ -101,26 +203,30 @@ namespace JSON
             if (!values.ContainsKey(key))
                 throw new ArgumentException("key, \"" + key + "\", does not exist");
             Object val = values.Get(key);
+            if (val == null)
+                throw new NullReferenceException("value pointed to by key, \"" + key + "\", is null");
             if (val.GetType().Equals(typeof(IntValue)))
                 return ((IntValue)val).value;
             else
                 throw new InvalidCastException("value pointed to by key, \"" + key + "\", is not an int");
         }
 
-        public float GetFloat(int index)
+        public double GetFloat(int index)
         {
             throw new Exception("method not implemented");
         }
 
-        public float GetFloat(string key)
+        public double GetFloat(string key)
         {
             if (!values.ContainsKey(key))
                 throw new ArgumentException("key, \"" + key + "\", does not exist");
             Object val = values.Get(key);
+            if (val == null)
+                throw new NullReferenceException("value pointed to by key, \"" + key + "\", is null");
             if (val.GetType().Equals(typeof(FloatValue)))
                 return ((FloatValue)val).value;
             else
-                throw new InvalidCastException("value pointed to by key, \"" + key + "\", is not a float");
+                throw new InvalidCastException("value pointed to by key, \"" + key + "\", is not a double");
         }
 
         public string GetString(int index)
@@ -133,6 +239,8 @@ namespace JSON
             if (!values.ContainsKey(key))
                 throw new ArgumentException("key, \"" + key + "\", does not exist");
             Object val = values.Get(key);
+            if (val == null)
+                throw new NullReferenceException("value pointed to by key, \"" + key + "\", is null");
             if (val.GetType().Equals(typeof(StringValue)))
                 return ((StringValue)val).value;
             else
@@ -149,6 +257,8 @@ namespace JSON
             if (!values.ContainsKey(key))
                 throw new ArgumentException("key, \"" + key + "\", does not exist");
             Object val = values.Get(key);
+            if (val == null)
+                throw new NullReferenceException("value pointed to by key, \"" + key + "\", is null");
             if (val.GetType().Equals(typeof(ArrayValue)))
                 return (ArrayValue)val;
             else
@@ -165,10 +275,26 @@ namespace JSON
             if (!values.ContainsKey(key))
                 throw new ArgumentException("key, \"" + key + "\", does not exist");
             Object val = values.Get(key);
+            if (val == null)
+                throw new NullReferenceException("value pointed to by key, \"" + key + "\", is null");
             if (val.GetType().Equals(typeof(JSONObject)))
                 return (JSONObject)val;
             else
                 throw new InvalidCastException("value pointed to by key, \"" + key + "\", is not a JSON");
+        }
+
+        public void SetObjectAt(int index, object v)
+        {
+            throw new Exception("method not implemented");
+        }
+
+        public void SetObject(string key, object v)
+        {
+            if (!values.ContainsKey(key))
+                throw new ArgumentException("key, \"" + key + "\", does not exist");
+            JSONElement element = JSONElement.ToJSONElement(v);
+            if (element != null)
+                values.Put(key, element);
         }
 
         public void SetBoolAt(int index, bool v)
@@ -203,12 +329,12 @@ namespace JSON
                 values.Put(key, new IntValue(v));
         }
 
-        public void SetFloatAt(int index, float v)
+        public void SetFloatAt(int index, double v)
         {
             throw new Exception("method not implemented");
         }
 
-        public void SetFloat(string key, float v)
+        public void SetFloat(string key, double v)
         {
             if (!values.ContainsKey(key))
                 throw new ArgumentException("key, \"" + key + "\", does not exist");
@@ -253,12 +379,13 @@ namespace JSON
             throw new Exception("method not implemented");
         }
 
-        public void SetEmptyArray(string key)
+        public ArrayValue SetEmptyArray(string key)
         {
             if (!values.ContainsKey(key))
                 throw new ArgumentException("key, \"" + key + "\", does not exist");
-            Object val = values.Get(key);
-            values.Put(key, new ArrayValue());
+            ArrayValue arr = new ArrayValue(); ;
+            values.Put(key, arr);
+            return arr;
         }
 
         public void SetJSONAt(int index, JSONObject v)
@@ -279,12 +406,30 @@ namespace JSON
             throw new Exception("method not implemented");
         }
 
-        public void SetEmptyJSON(string key)
+        public JSONObject SetEmptyJSON(string key)
         {
             if (!values.ContainsKey(key))
                 throw new ArgumentException("key, \"" + key + "\", does not exist");
-            Object val = values.Get(key);
-            values.Put(key, new JSONObject());
+            JSONObject json = new JSONObject();
+            values.Put(key, json);
+            return json;
+        }
+
+        public void SetNullAt(int index)
+        {
+            throw new Exception("method not implemented");
+        }
+
+        public void SetNull(string key)
+        {
+            if (!values.ContainsKey(key))
+                throw new ArgumentException("key, \"" + key + "\", does not exist");
+            values.Put(key, new NullValue());
+        }
+
+        public void AddObjectAt(int index, string key, object v)
+        {
+            throw new Exception("method not implemented");
         }
 
         public void AddBoolAt(int index, string key, bool v)
@@ -297,7 +442,7 @@ namespace JSON
             throw new Exception("method not implemented");
         }
 
-        public void AddFloatAt(int index, string key, float v)
+        public void AddFloatAt(int index, string key, double v)
         {
             throw new Exception("method not implemented");
         }
@@ -327,6 +472,18 @@ namespace JSON
             throw new Exception("method not implemented");
         }
 
+        public void AddNullAt(int index, string key)
+        {
+            throw new Exception("method not implemented");
+        }
+
+        public void AddObject(string key, object v)
+        {
+            JSONElement element = JSONElement.ToJSONElement(v);
+            if( element != null )
+                values.Put(key, element);
+        }
+
         public void AddBool(string key, bool v)
         {
             values.Put(key, new BoolValue(v));
@@ -337,7 +494,7 @@ namespace JSON
             values.Put(key, new IntValue(v));
         }
 
-        public void AddFloat(string key, float v)
+        public void AddFloat(string key, double v)
         {
             values.Put(key, new FloatValue(v));
         }
@@ -352,9 +509,11 @@ namespace JSON
             values.Put(key, new ArrayValue(v));
         }
 
-        public void AddEmptyArray(string key)
+        public ArrayValue AddEmptyArray(string key)
         {
-            values.Put(key, new ArrayValue());
+            ArrayValue arr = new ArrayValue();
+            values.Put(key, arr);
+            return arr;
         }
 
         public void AddJSON(string key, JSONObject v)
@@ -362,9 +521,16 @@ namespace JSON
             values.Put(key, v);
         }
 
-        public void AddEmptyJSON(string key)
+        public JSONObject AddEmptyJSON(string key)
         {
-            values.Put(key, new JSONObject());
+            JSONObject json = new JSONObject();
+            values.Put(key, json);
+            return json;
+        }
+
+        public void AddNull(string key)
+        {
+            values.Put(key, new NullValue());
         }
 
         override
@@ -372,13 +538,18 @@ namespace JSON
         {
             string str = "{";
             int i = 0;
-            for (Iterator<Entry<string, Object>> it = values.EntrySet().Iterate(); it.HasNext(); )
+            for (Iterator<Entry<string, JSONElement>> it = values.EntrySet().Iterate(); it.HasNext(); )
             {
-                Entry<string, Object> e = it.Next();
+                Entry<string, JSONElement> e = it.Next();
                 str += (i > 0 ? "," : "") + e.GetKey() + "=" + e.GetValue().ToString();
                 i++;
             }
             return str + "}";
+        }
+
+        override public object GetValue()
+        {
+            return CloneComplete();
         }
 
     }

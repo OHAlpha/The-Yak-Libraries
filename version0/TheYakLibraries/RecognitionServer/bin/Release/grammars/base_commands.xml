@@ -1,0 +1,43 @@
+﻿<grammar tag-format="semantics/1.0" version="1.0" xml:lang="en-US" mode="voice" root="command"
+xmlns="http://www.w3.org/2001/06/grammar">
+
+  <rule id="command" scope="public">
+    <tag>out.type = "command"</tag>
+    <one-of>
+      <item>
+        exit<tag>out.command = "exit"</tag>
+      </item>
+      <item>
+        <ruleref uri="#menu"/>
+        <tag>out.command = rules.latest();</tag>
+      </item>
+      <item>
+        <ruleref uri="#demo"/>
+        <tag>out.command = "demo"</tag>
+      </item>
+    </one-of>
+  </rule>
+
+  <rule id="menu">
+    <one-of>
+      <item>
+        show<tag>out="showmenu"</tag>
+      </item>
+      <item>
+        hide<tag>out="hidemenu"</tag>
+      </item>
+      <item>
+        <tag>out="togglemenu"</tag>
+      </item>
+    </one-of>
+    menu
+  </rule>
+
+  <rule id="demo">
+    <item repeat="0-1">
+      play
+    </item>
+    demo
+  </rule>
+
+</grammar>

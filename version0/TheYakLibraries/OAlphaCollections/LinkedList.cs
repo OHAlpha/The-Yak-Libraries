@@ -170,7 +170,7 @@ namespace OAlphaCollections
                 return -1;
             int i = 0;
             SingleLink<T> c = head;
-            while (head != null)
+            while (c != null)
             {
                 if (e == null && c.GetValue() == null || e.Equals(c.GetValue()))
                     return i;
@@ -186,7 +186,7 @@ namespace OAlphaCollections
             int m = -1;
             int i = 0;
             SingleLink<T> c = head;
-            while (head != null)
+            while (c != null)
             {
                 if (e == null && c.GetValue() == null || e.Equals(c.GetValue()))
                     m = i;

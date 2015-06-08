@@ -216,7 +216,19 @@ namespace JSON
                     space.index++;
                 }
                 valStr = value.ToString();
-                space.result = valStr.Contains(".") ? (Object)new FloatValue(float.Parse(valStr)) : (Object)new IntValue(int.Parse(valStr));
+                space.result = valStr.Contains(".") ? (Object)new FloatValue(double.Parse(valStr)) : (Object)new IntValue(int.Parse(valStr));
+            }
+            else if (space.arr[space.index] == '-')
+            {
+                //UnityEngine.Debug.Log ("read digit. expecting number");
+                space.index++;
+                while (numeric(space.arr[space.index]))
+                {
+                    value.Append(space.arr[space.index]);
+                    space.index++;
+                }
+                valStr = value.ToString();
+                space.result = valStr.Contains(".") ? (Object)new FloatValue(-double.Parse(valStr)) : (Object)new IntValue(-int.Parse(valStr));
             }
             else if (space.arr[space.index] == '\"')
             {

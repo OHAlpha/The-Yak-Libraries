@@ -1,0 +1,15 @@
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\bin\Debug\UnityScripts.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\bin\Debug\UnityScripts.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\bin\Debug\JSON.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\bin\Debug\Logging.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\bin\Debug\TCPConnectors.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\bin\Debug\UnityEngine.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\bin\Debug\UnityEngine.UI.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\bin\Debug\OAlphaCollections.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\bin\Debug\OAlphaCollections.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\bin\Debug\JSON.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\bin\Debug\Logging.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\bin\Debug\TCPConnectors.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\obj\Debug\UnityScripts.dll
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\UnityScripts\obj\Debug\UnityScripts.pdb

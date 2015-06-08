@@ -6,16 +6,16 @@ namespace JSON
 
     public class ArrayValue : JSONElement
     {
-        private List<Object> value = new SinglyLinkedList<Object>();
+        private List<JSONElement> value = new SinglyLinkedList<JSONElement>();
 
         public ArrayValue()
         {
         }
 
-        public ArrayValue(Object[] value)
+        public ArrayValue(object[] value)
         {
             for (int i = 0; i < value.Length; i++)
-                this.value.Add(value[i]);
+                this.value.Add(JSONElement.ToJSONElement(value[i]));
         }
 
         public int GetLength()
@@ -41,8 +41,73 @@ namespace JSON
                 return VALUE_TYPE_ARRAY;
             else if (type.Equals(typeof(JSONObject)))
                 return VALUE_TYPE_JSON;
+            else if (type.Equals(typeof(NullValue)))
+                return VALUE_TYPE_NULL;
             else
                 return -1;
+        }
+
+        public bool IsBool(int index)
+        {
+            if (index < 0 || index >= value.Size())
+                throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
+            Object val = value.GetAt(index);
+            Type type = val.GetType();
+            return type.Equals(typeof(BoolValue));
+        }
+
+        public bool IsInt(int index)
+        {
+            if (index < 0 || index >= value.Size())
+                throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
+            Object val = value.GetAt(index);
+            Type type = val.GetType();
+            return type.Equals(typeof(IntValue));
+        }
+
+        public bool IsFloat(int index)
+        {
+            if (index < 0 || index >= value.Size())
+                throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
+            Object val = value.GetAt(index);
+            Type type = val.GetType();
+            return type.Equals(typeof(FloatValue));
+        }
+
+        public bool IsString(int index)
+        {
+            if (index < 0 || index >= value.Size())
+                throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
+            Object val = value.GetAt(index);
+            Type type = val.GetType();
+            return type.Equals(typeof(StringValue));
+        }
+
+        public bool IsArray(int index)
+        {
+            if (index < 0 || index >= value.Size())
+                throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
+            Object val = value.GetAt(index);
+            Type type = val.GetType();
+            return type.Equals(typeof(ArrayValue));
+        }
+
+        public bool IsJSON(int index)
+        {
+            if (index < 0 || index >= value.Size())
+                throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
+            Object val = value.GetAt(index);
+            Type type = val.GetType();
+            return type.Equals(typeof(JSONObject));
+        }
+
+        public bool IsNull(int index)
+        {
+            if (index < 0 || index >= value.Size())
+                throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
+            Object val = value.GetAt(index);
+            Type type = val.GetType();
+            return type.Equals(typeof(NullValue));
         }
 
         public bool GetBool(int index)
@@ -67,7 +132,7 @@ namespace JSON
                 throw new InvalidCastException("value at " + index + " is not an int");
         }
 
-        public float GetFloat(int index)
+        public double GetFloat(int index)
         {
             if (index < 0 || index >= value.Size())
                 throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
@@ -75,7 +140,7 @@ namespace JSON
             if (val.GetType().Equals(typeof(FloatValue)))
                 return ((FloatValue)val).value;
             else
-                throw new InvalidCastException("value at " + index + " is not a float");
+                throw new InvalidCastException("value at " + index + " is not a double");
         }
 
         public string GetString(int index)
@@ -111,6 +176,15 @@ namespace JSON
                 throw new InvalidCastException("value at " + index + " is not a JSON");
         }
 
+        public void SetObject(int index, object v)
+        {
+            if (index < 0 || index >= value.Size())
+                throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
+            JSONElement element = JSONElement.ToJSONElement(v);
+            if (element != null)
+                value.SetAt(index, element);
+        }
+
         public void SetBool(int index, bool v)
         {
             if (index < 0 || index >= value.Size())
@@ -133,7 +207,7 @@ namespace JSON
                 value.SetAt(index, new IntValue(v));
         }
 
-        public void SetFloat(int index, float v)
+        public void SetFloat(int index, double v)
         {
             if (index < 0 || index >= value.Size())
                 throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
@@ -159,24 +233,39 @@ namespace JSON
         {
             if (index < 0 || index >= value.Size())
                 throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
-            Object val = value.GetAt(index);
             value.SetAt(index, new ArrayValue(v));
         }
 
-        public void SetEmptyArray(int index)
+        public ArrayValue SetEmptyArray(int index)
         {
             if (index < 0 || index >= value.Size())
                 throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
-            Object val = value.GetAt(index);
-            value.SetAt(index, new ArrayValue());
+            ArrayValue arr = new ArrayValue();
+            value.SetAt(index, arr);
+            return arr;
         }
 
         public void SetJSON(int index, JSONObject v)
         {
             if (index < 0 || index >= value.Size())
                 throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
-            Object val = value.GetAt(index);
             value.SetAt(index, v);
+        }
+
+        public JSONObject SetEmptyJSON(int index, JSONObject v)
+        {
+            if (index < 0 || index >= value.Size())
+                throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
+            JSONObject json = new JSONObject();
+            value.SetAt(index, json);
+            return json;
+        }
+
+        public void SetNull(int index)
+        {
+            if (index < 0 || index >= value.Size())
+                throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
+            value.SetAt(index, new NullValue());
         }
 
         public void SetEmptyJSON(int index)
@@ -185,6 +274,13 @@ namespace JSON
                 throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + (value.Size() - 1) + " inclusively");
             Object val = value.GetAt(index);
             value.SetAt(index, new JSONObject());
+        }
+
+        public void AddObjectAt(int index, object v)
+        {
+            JSONElement element = JSONElement.ToJSONElement(v);
+            if (element != null)
+                value.AddAt(element, index);
         }
 
         public void AddBoolAt(int index, bool v)
@@ -201,7 +297,7 @@ namespace JSON
             value.AddAt(new IntValue(v), index);
         }
 
-        public void AddFloatAt(int index, float v)
+        public void AddFloatAt(int index, double v)
         {
             if (index < 0 || index > value.Size())
                 throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + value.Size() + " inclusively");
@@ -222,11 +318,13 @@ namespace JSON
             value.AddAt(new ArrayValue(v), index);
         }
 
-        public void AddEmptyArrayAt(int index)
+        public ArrayValue AddEmptyArrayAt(int index)
         {
             if (index < 0 || index > value.Size())
                 throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + value.Size() + " inclusively");
-            value.AddAt(new ArrayValue(), index);
+            ArrayValue arr = new ArrayValue();
+            value.AddAt(arr, index);
+            return arr;
         }
 
         public void AddJSONAt(int index, JSONObject v)
@@ -234,6 +332,29 @@ namespace JSON
             if (index < 0 || index > value.Size())
                 throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + value.Size() + " inclusively");
             value.AddAt(v, index);
+        }
+
+        public JSONObject AddEmptyJSONAt(int index)
+        {
+            if (index < 0 || index > value.Size())
+                throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + value.Size() + " inclusively");
+            JSONObject json = new JSONObject();
+            value.AddAt(json, index);
+            return json;
+        }
+
+        public void AddNullAt(int index)
+        {
+            if (index < 0 || index > value.Size())
+                throw new IndexOutOfRangeException("index, " + index + ", must between 0 and " + value.Size() + " inclusively");
+            value.AddAt(new NullValue(), index);
+        }
+
+        public void AddObject(object v)
+        {
+            JSONElement element = JSONElement.ToJSONElement(v);
+            if( element != null )
+                value.Add(element);
         }
 
         public void AddBool(bool v)
@@ -246,7 +367,7 @@ namespace JSON
             value.Add(new IntValue(v));
         }
 
-        public void AddFloat(float v)
+        public void AddFloat(double v)
         {
             value.Add(new FloatValue(v));
         }
@@ -261,14 +382,28 @@ namespace JSON
             value.Add(new ArrayValue(v));
         }
 
-        public void AddEmptyArray()
+        public ArrayValue AddEmptyArray()
         {
-            value.Add(new ArrayValue());
+            ArrayValue arr = new ArrayValue();
+            value.Add(arr);
+            return arr;
         }
 
         public void AddJSON(JSONObject v)
         {
             value.Add(v);
+        }
+
+        public JSONObject AddEmptyJSON()
+        {
+            JSONObject json = new JSONObject();
+            value.Add(json);
+            return json;
+        }
+
+        public void AddNull()
+        {
+            value.Add(new NullValue());
         }
 
         override
@@ -278,6 +413,15 @@ namespace JSON
             for (int i = 0; i < value.Size(); i++)
                 str += (i > 0 ? "," : "") + value.GetAt(i).ToString();
             return str + "]";
+        }
+
+        override public object GetValue()
+        {
+            object[] arr = new object[value.Size()];
+            int i = 0;
+            for (Iterator<JSONElement> it = value.Iterate(); it.HasNext(); )
+                arr[i++] = it.Next().GetValue();
+            return arr;
         }
     }
 

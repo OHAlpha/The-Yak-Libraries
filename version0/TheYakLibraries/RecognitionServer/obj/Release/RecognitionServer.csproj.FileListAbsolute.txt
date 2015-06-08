@@ -11,3 +11,5 @@ C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionSer
 C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\OAlphaCollections.dll
 C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\JSON.pdb
 C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\OAlphaCollections.pdb
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\grammars\base_commands.xml
+C:\Users\Alpha\Workspace\TheYakLibraries\version0\TheYakLibraries\RecognitionServer\bin\Release\grammars\demo.xml

@@ -68,9 +68,11 @@ namespace OAlphaCollections
             if (size == 0)
                 return false;
             SingleLink<SimpleEntry<K, V>> c = head;
-            while (head != null)
+            while (c != null)
             {
-                if (k == null && c.GetValue().GetKey() == null || k.Equals(c.GetValue().GetKey()))
+                if (c.GetValue() == null)
+                    throw new Exception("SingleLink.GetValue() must not be null");
+                if (k == null && c.GetValue().GetKey() == null || k != null && k.Equals(c.GetValue().GetKey()))
                     return true;
                 c = c.GetNext();
             }
@@ -82,7 +84,7 @@ namespace OAlphaCollections
             if (size == 0)
                 return false;
             SingleLink<SimpleEntry<K, V>> c = head;
-            while (head != null)
+            while (c != null)
             {
                 if (v == null && c.GetValue().GetValue() == null || v.Equals(c.GetValue().GetValue()))
                     return true;
@@ -131,7 +133,7 @@ namespace OAlphaCollections
             if (size == 0)
                 return default(V);
             SingleLink<SimpleEntry<K, V>> c = head;
-            while (head != null)
+            while (c != null)
             {
                 if (k == null && c.GetValue().GetKey() == null || k.Equals(c.GetValue().GetKey()))
                     return c.GetValue().GetValue();

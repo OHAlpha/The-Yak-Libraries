@@ -60,10 +60,22 @@
       <Project>{56A5F8F9-0D62-4DA5-AEC0-B0DEF585365F}</Project>
       <Name>Logging</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OAlphaCollections\OAlphaCollections.csproj">
+      <Project>{41D5D973-1DEB-4143-BD21-8F7824AEFE7A}</Project>
+      <Name>OAlphaCollections</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TCPConnectors\TCPConnectors.csproj">
       <Project>{CD2FB0DB-3588-4638-B860-883083F1059D}</Project>
       <Name>TCPConnectors</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="grammars\base_commands.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="grammars\demo.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

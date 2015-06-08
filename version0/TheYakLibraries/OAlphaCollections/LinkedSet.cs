@@ -62,7 +62,7 @@ namespace OAlphaCollections
             if (size == 0)
                 return false;
             SingleLink<T> c = head;
-            while (head != null)
+            while (c != null)
             {
                 if (e == null && c.GetValue() == null || e.Equals(c.GetValue()))
                     return true;

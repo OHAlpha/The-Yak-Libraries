@@ -29,8 +29,6 @@ namespace TCPConnectors
 
         }
 
-        public delegate void MessageHandler(string request, JSONObject response);
-
         public delegate void RequestHandler(JSONObject request, JSONObject response);
 
         private int fieldPort;
@@ -43,9 +41,9 @@ namespace TCPConnectors
 
         private bool listening;
 
-        public MessageHandler commandHandler;
+        public RequestHandler commandHandler;
 
-        public MessageHandler messageHandler;
+        public RequestHandler messageHandler;
 
         public RequestHandler requestHandler;
 
@@ -60,14 +58,14 @@ namespace TCPConnectors
         {
 
             IPHostEntry ipHostInfo = Dns.GetHostEntry("localhost");
-            Log("Server entry retrieved" + "\n");
+            Log("Server entry retrieved: " + ipHostInfo + "\n");
             IPAddress ipAddress = ipHostInfo.AddressList[0];
-            Log("Server address retrieved" + "\n");
+            Log("Server address retrieved: " + ipAddress + "\n");
             IPEndPoint localEP = new IPEndPoint(ipAddress, fieldPort);
-            Log("Server Endpoint created" + "\n");
+            Log("Server Endpoint created: " + localEP + "\n");
 
             listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            Log("listener created" + "\n");
+            Log("listener created: " + listener + "\n");
 
             try
             {
@@ -80,12 +78,14 @@ namespace TCPConnectors
                 {
                     Log("listening" + "\n");
                     allDone.Reset();
+                    Log("listenet.Connected = " + listener.Connected + "\n");
                     listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
                     allDone.WaitOne();
                 }
             }
             catch (Exception e)
             {
+                Log("In Server.Serve\n");
                 Log(e.ToString() + "\n");
             }
 
@@ -93,72 +93,96 @@ namespace TCPConnectors
 
         public void AcceptCallback(IAsyncResult ar)
         {
-            Log("accepted" + "\n");
-            allDone.Set();
-            Socket handler = listener.EndAccept(ar);
+            try
+            {
+                Log("accepted" + "\n");
+                allDone.Set();
+                Socket handler = listener.EndAccept(ar);
 
-            StateSocket state = new StateSocket();
-            state.workSocket = handler;
-            handler.BeginReceive(state.buffer, 0,
-                StateSocket.BufferSize, 0,
-                new AsyncCallback(ReadCallback), state);
+                StateSocket state = new StateSocket();
+                state.workSocket = handler;
+                handler.BeginReceive(state.buffer, 0,
+                    StateSocket.BufferSize, 0,
+                    new AsyncCallback(ReadCallback), state);
+            }
+            catch (Exception e)
+            {
+                Log("In Server.AcceptCallback\n");
+                Log(e.ToString() + "\n");
+            }
         }
 
         public void ReadCallback(IAsyncResult ar)
         {
-            String content = String.Empty;
-
-            StateSocket state = (StateSocket)ar.AsyncState;
-            Socket handler = state.workSocket;
-
-            int bytesRead = handler.EndReceive(ar);
-
-            if (bytesRead > 0)
+            try
             {
-                state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
-                content = state.sb.ToString();
-                Log("Read " + content.Length + " bytes from socket.  Data : " + content + "\n");
-                if (content.IndexOf("<EOF>") > -1)
-                {
-                    JSONObject response = new JSONObject();
-                    response.AddString("responseType", "multi");
-                    response.AddEmptyArray("responses");
-                    ArrayValue responses = response.GetArray("responses");
-                    responses.AddJSON(HandleMessage(JSONParser.ParseString(content.Substring(0, content.IndexOf("<EOM>")))));
-                    responses.AddJSON(new JSONObject(new string[] { "responseType", "message" }, new object[] { "message", "Diconnecting" }));
-                    state.response = response;
-                    Send(state);
+                String content = String.Empty;
 
-                    handler.Shutdown(SocketShutdown.Both);
-                    handler.Close();
-                }
-                else if (content.IndexOf("<EOM>") > -1)
-                {
-                    state.response = HandleMessage(JSONParser.ParseString(content.Substring(0, content.IndexOf("<EOM>"))));
-                    Send(state);
-                    state.sb = new StringBuilder();
+                StateSocket state = (StateSocket)ar.AsyncState;
+                Socket handler = state.workSocket;
 
-                    handler.BeginReceive(state.buffer, 0, StateSocket.BufferSize, 0, new AsyncCallback(ReadCallback), state);
-                }
-                else
+                int bytesRead = handler.EndReceive(ar);
+
+                if (bytesRead > 0)
                 {
-                    JSONObject response = new JSONObject();
-                    response.AddString("responseType", "message");
-                    response.AddString("message", "Line Received");
-                    state.response = response;
-                    Send(state);
-                    handler.BeginReceive(state.buffer, 0, StateSocket.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+                    state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
+                    content = state.sb.ToString();
+                    Log("Read " + content.Length + " bytes from socket.  Data : " + content + "\n");
+                    if (content.IndexOf("<EOF>") > -1)
+                    {
+                        JSONObject response = new JSONObject();
+                        response.AddString("responseType", "multi");
+                        response.AddEmptyArray("responses");
+                        ArrayValue responses = response.GetArray("responses");
+                        responses.AddJSON(HandleMessage(JSONParser.ParseString(content.Substring(0, content.IndexOf("<EOF>")))));
+                        responses.AddJSON(new JSONObject(new string[] { "responseType", "message" }, new object[] { "message", "Diconnecting" }));
+                        state.response = response;
+                        Send(state);
+
+                        handler.Shutdown(SocketShutdown.Both);
+                        handler.Close();
+                    }
+                    else if (content.IndexOf("<EOM>") > -1)
+                    {
+                        state.response = HandleMessage(JSONParser.ParseString(content.Substring(0, content.IndexOf("<EOM>"))));
+                        Send(state);
+                        state.sb = new StringBuilder();
+
+                        handler.BeginReceive(state.buffer, 0, StateSocket.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+                    }
+                    else
+                    {
+                        JSONObject response = new JSONObject();
+                        response.AddString("responseType", "message");
+                        response.AddString("message", "Line Received");
+                        state.response = response;
+                        Send(state);
+                        handler.BeginReceive(state.buffer, 0, StateSocket.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+                    }
                 }
+                Log("ReadCallback End\n");
             }
-            Log("ReadCallback End\n");
+            catch (Exception e)
+            {
+                Log("In Server.ReadCallback\n");
+                Log(e.ToString() + "\n");
+            }
         }
 
         public void Send(StateSocket state)
         {
-            Log("sending response: " + state.response.ToString() + "\n");
-            Socket handler = state.workSocket;
-            byte[] byteData = Encoding.ASCII.GetBytes(state.response.ToString());
-            handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), state);
+            try
+            {
+                Log("sending response: " + state.response.ToString() + "\n");
+                Socket handler = state.workSocket;
+                byte[] byteData = Encoding.ASCII.GetBytes(state.response.ToString());
+                handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), state);
+            }
+            catch (Exception e)
+            {
+                Log("In Server.Send\n");
+                Log(e.ToString() + "\n");
+            }
         }
 
         public void SendCallback(IAsyncResult ar)
@@ -173,20 +197,32 @@ namespace TCPConnectors
             }
             catch (Exception e)
             {
+                Log("In Server.SendCallback\n");
                 Log(e.ToString() + "\n");
             }
         }
 
         public JSONObject HandleMessage(JSONObject msg)
         {
-            JSONObject response = new JSONObject();
-            if (msg.GetString("requestType").Equals("command"))
-                commandHandler(msg.GetString("command"), response);
-            if (msg.GetString("requestType").Equals("message"))
-                messageHandler(msg.GetString("message"), response);
-            if (msg.GetString("requestType").Equals("request"))
-                requestHandler(msg.GetJSON("request"), response);
-            return response;
+            try
+            {
+                JSONObject response = new JSONObject();
+                if (msg.GetString("requestType").Equals("command"))
+                    commandHandler(msg.GetJSON("command"), response);
+                else if (msg.GetString("requestType").Equals("message"))
+                    messageHandler(msg.GetJSON("message"), response);
+                else if (msg.GetString("requestType").Equals("request"))
+                    requestHandler(msg.GetJSON("request"), response);
+                return response;
+            }
+            catch (Exception e)
+            {
+                Log("In Server.HandleMessage\n");
+                Log("msg: " + msg.ToString() + "\n");
+                Log("msg.requestType: " + msg.GetString("requestType") + "\n");
+                Log(e.ToString() + "\n");
+                return null;
+            }
         }
 
         public void Start()
@@ -202,20 +238,7 @@ namespace TCPConnectors
         {
 
             listening = false;
-            try
-            {
-
-                Join();
-                return true;
-
-            }
-            catch (Exception e)
-            {
-
-                Log(e.ToString());
-                return false;
-
-            }
+            return Join();
 
         }
 
@@ -226,14 +249,30 @@ namespace TCPConnectors
 
         }
 
-        public void Join()
+        public bool Join()
         {
-            server.Join();
+            if (Thread.CurrentThread.Equals(server))
+                return true;
+            try
+            {
+
+                server.Join();
+                return true;
+
+            }
+            catch (Exception e)
+            {
+
+                Log(e.ToString());
+                return false;
+
+            }
         }
 
         public Thread server
         {
-            get {
+            get
+            {
                 return fieldServer;
             }
         }

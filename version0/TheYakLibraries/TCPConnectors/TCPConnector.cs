@@ -15,9 +15,9 @@ namespace TCPConnectors
 
         private TCPClient client;
 
-        public TCPServerThread.MessageHandler commandHandler;
+        public TCPServerThread.RequestHandler commandHandler;
 
-        public TCPServerThread.MessageHandler messageHandler;
+        public TCPServerThread.RequestHandler messageHandler;
 
         public TCPServerThread.RequestHandler requestHandler;
 
@@ -33,12 +33,12 @@ namespace TCPConnectors
             client.logger = DelegateLog;
         }
 
-        void DelegateCommand(string command, JSONObject response)
+        void DelegateCommand(JSONObject command, JSONObject response)
         {
             commandHandler(command, response);
         }
 
-        void DelegateMessage(string message, JSONObject response)
+        void DelegateMessage(JSONObject message, JSONObject response)
         {
             messageHandler(message, response);
         }
@@ -58,12 +58,12 @@ namespace TCPConnectors
             return client.Message(msg, endConnection);
         }
 
-        public void Start()
+        public void Start(int retries)
         {
 
             Log("connecting\n");
             server.Start();
-            client.Connect();
+            client.Connect(retries);
             Log("connected\n");
 
         }
@@ -78,12 +78,12 @@ namespace TCPConnectors
             server.Join();
         }
 
-        void StopListening(string command, JSONObject response)
+        void StopListening(JSONObject command, JSONObject response)
         {
-            if(command.Equals("Disconnect"))
+            if(command.GetString("command").Equals("Disconnect"))
             {
-                server.Stop();
-                if (response.hasKey("responseType"))
+                server.Shutdown();
+                if (response.HasKey("responseType"))
                 {
                     if (response.GetString("responseType").Equals("multi"))
                     {
